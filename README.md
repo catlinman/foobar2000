@@ -6,7 +6,7 @@
 My complete Foobar2000 theme. A fork of CaTRoX that includes a lot of custom
 panels, plugins and quality of life modules. The ultimate Foobar2000 theme.
 
-*What's included?**
+*What's included?*
 
 - Clean and dark interface with simple navigation.
 - Searching and playing of YouTube videos.
