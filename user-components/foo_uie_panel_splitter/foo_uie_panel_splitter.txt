@@ -1,0 +1,940 @@
+foo_uie_panel_splitter.dll v0.3.8.3 (alpha ver)
+for foobar2000 v0.9.5.2+, Columns UI0.3+, WindowsXP+ 
+
+Note: This component is incomplete and may show unpredictable behaviour.
+
+
+【概要】
+Columns UI用パネルを配置するためのsplitter
+ボーダーなしや、パネルを重ねたりなど少しは自由度の高い設定が出来る。
+
+
+【注意】
+恐ろしいほどに完成度が低いです。当初予定していたものとだいぶかけ離れたものになってしまったため、
+設定項目の整合性がとれていません。 また、設定も複雑で、TitleFormatの知識が必要です。
+
+
+【使い方】
+･ foobar2000のcomponentフォルダにdllをコピー
+･ ColumnsUIのLayoutから、Panel Stack Splitterを追加。
+･ ColumnsUIのSplitterとして機能します。
+･ 追加されたパネル上で右クリック->Splitter Settingsで設定可能。
+
+
+【設定】
+パネルの配置は自動配置モードと、強制設定するモードがあります。
+自動配置するモードは、水平方向(Horizontal)に配置するか、垂直方向(Vertical)に配置するかを選べます。
+Forced layoutがonになっているパネルが強制配置モードで配置されます。
+
+
+Size:         パネルの表示サイズ(Horizontalなら水平のサイズ、Verticalなら垂直のサイズ)
+Lock size:    スケーリングしないで配置する。
+              offのときは各パネルのsizeにしたがって Splitterサイズに対して適当にスケーリングして配置する。
+              現状 Lockしても±1ピクセル分ぐらいぶれてしまうことがある。
+              --> 修正が難しいので、修正しないかも。
+
+Forced layout: その下の left Top width rightで指定した範囲にパネルを強制的に配置する。
+              (sizeとauto-scalingは無効になる)
+
+              パネルを重ねた場合、パネルリストで上位のパネルほど前面に表示される
+              (ただし子パネルの実装次第。やたら前面に出てくるパネルもあるみたい。)
+              Title Formattingが有効。
+              %_width%  %_height% でPanel Stack Splitterの水平幅、垂直幅を参照できる。
+              設定例:
+              left: $div(%_width%,4)
+              top : $div(%_height%,4)
+              width: $div(%_width%,2)
+              height: $div(%_height%,2)
+
+              また、Splitterのサイズに対する相対値で指定するモードもある。
+              use parsentage valueがonのときは、Splitterのサイズに対するパーセント値[0-100]で指定すること。
+              use parsentage valueのonのときの設定例:
+              left: 25
+              top : 25
+              width: 50
+              height: 50
+
+
+padding:      パネルの周りにスペースを入れる。
+              Title Formattingは無効なので固定の数値を入れること。
+              パネルを自動配置した場合、paddingが設定されていればボーダーとしてマウスでリサイズできるようになる。
+              enable resizable borderでon/off可能
+
+Caption :     パネルの名前、識別子
+Use background color: 指定した色で、背景を塗りつぶす。
+Use image:    固定の背景画像を指定する。TitleFormattingは無効。
+Pseudo transparent: splitterの背景を擬似的に透過する。(splitterを入れ子にした場合などに使用)
+Evaluate scripts when... : トラック情報が変更されたときに、TF(PerTrackとPerSecond)を評価する。
+
+  [備考]
+  ColumnsUIのパネルの中には背景透過機能を持つパネルが存在するが、
+  use background colorもしくはuse imageを使用しないとそのパネルの背景が透過しない場合が多い。
+
+
+Titleformat mode on startup:   起動時のPerTrackのTitleFormatのモード。
+      now playing      -  TFの対象が再生トラック
+      follow cursor    -  プレイリストで選択中のトラック
+      last mode        -  前回終了時のモード(ボタンによるモード切り替えを保存する)
+ 
+
+
+title formatting script:
+ここにTitleformatを記述することで、背景を装飾できる。ただし、子パネルの上にかぶせて描画することはできない。
+
+
+
+【拡張コマンドリファレンス】
+大文字の引数は、省略可能。
+注意:空白を無駄に入れないこと。(改行は可)
+
+Title formatting scriptが評価されるのは、
+	Per Track  - サイズが変更されたとき。再生トラックや再生･一時停止状態が変わったとき。ボタン関数でREFRESHしたとき。
+	Per Second - 毎秒ごと。再生状態が変化したとき。ボタン関数でREFRESHしたとき。
+
+
+【フィールド】
+%ps_width%
+	Splitterの横幅を返す。
+
+
+%ps_height%
+	Splitterの縦幅を返す。
+
+
+%ps_tfmode%
+	TFのモードを返す。(Per Trackで有効)
+		0  nowplayingモード
+		1  follow cursorモード
+
+%ps_isplaying%
+	再生中か否か。
+
+%ps_ispause%
+	一時停止中か否か。
+
+
+%ps_foobar2000_path%
+	foobar2000実行ファイルのパス。
+
+
+%ps_user_profile_path%
+	ユーザープロファイルののパス。
+
+
+%ps_playback_order%
+	playback orderを返す。
+	ただし、現状では、playback orderを変更しても即座に反映されない。(REFRESHコマンドが必要)
+
+%ps_track_state%
+	TFを評価するトラックの状態。
+		0: no error
+		1: no track
+		2: dummy track (for mainly legacy metadb_display_hook API)
+
+[関数]
+
+$init_ps_global(name,value)
+$init_ps_global(name,value,persistency)
+	指定された名前nameのグローバル変数を作成し、値valueを設定します。
+	指定された名前のグローバル変数が存在していない場合に限り有効です。
+
+	●特記事項
+	･グローバル変数は全てのPanelStackSplitter間で共有されますが、各PanelStackSplitterのTFの評価順序は、不定です。
+	･persistency=1で設定した変数は、$delete_ps_gobalを使うか、設定ダイアログから消去するまで保存されます。
+	･$init_ps_global(name,value)は、$if($get_ps_global(name),,$set_ps_global(name,value)) とほぼ等価。
+
+
+	name - グローバル変数名
+	value - 値
+	persistency - 終了時に保存するかどうか。
+		0 : 終了時に保存されない。
+		1 : 終了時に保存される。(default)
+
+	
+
+
+$set_ps_global(name,value)
+	指定された名前のグローバル変数に値valueを設定します。
+	グローバル変数nameが存在しない場合は自動的に作成して値を設定します。
+
+
+$get_ps_global(name)  or  %name%
+	指定された名前のグローバル変数の値を返します。
+	nameに該当するグローバル変数が存在しない場合、falseを返します。
+
+
+$delete_ps_global(name)
+	グローバル変数nameを削除します。
+
+
+$font(name,size,OPTIONS)
+	フォント設定をします。
+	name - フォント名
+	size - フォントサイズ
+	OPTIONS - スタイル。下記の組み合わせ。
+		bold italic underline strikeout
+
+
+	例: $font(Tahoma,10,bold italic)
+
+
+
+$drawstring(text,x,y,w,h,color,OPTIONS [,OPTIONS2])
+	文字列を描画する関数。textを座標(x,y)に描画する。
+
+	●特記事項
+	･文字列はこの関数とdrawtextとdrawtextexでしか表示できません。
+	･TrueTypeフォントしか使えないかも。
+	text - 描画する文字列。
+	x - 水平座標
+	y - 垂直座標
+	w - 描画範囲の幅
+	h - 描画範囲の高さ
+	color - 色 r-g-b-a形式で指定する。
+	OPTIONS - アライン指定、描画品質指定、クリップ指定などをする。
+		left hcenter right    -  水平アライン指定
+
+		top  vcenter bottom   -  垂直アライン指定
+
+		nowrap                -  ラップアラウンドしない
+
+ 		noaa                  -  ClearTypeもアンチエイリアスも無効。
+		aa                    -  アンチエイリアスをかけるモード。ClearTypeが効かないフォントでもアンチエイリアスがかかる。
+		hq                    -  最高品質で描画するモード。ClearTypeモード。(defaultにしました)
+		glow_aa               -  glowの特殊モードを使用するオプション。(noaa, aa, hqと排他)
+
+		trimchar  trimword    -  表示範囲に収まらない場合のトリミングの設定。
+		elipchar  elipword    -  表示範囲に収まらない場合に最後を･･･に置き換える設定。
+
+		mempos                -  getlastposで、描画した座標を取得できるようにする。   
+
+
+	OPTIONS2 - glow効果の条件を指定する。(実験的オプション, experimental option)
+
+		glow - glowオプション
+			指定形式 glow:expand:colour[:strength]
+				expand - [0-5]
+				colour - r-g-b
+				strength - [0-3]   glow_aaの場合は無効
+
+		offset - glow効果のオフセット指定
+			指定形式 offset:x:y
+				x  - glowの水平方向のオフセット
+				y  - glowの垂直方向のオフセット
+
+		●特記事項
+		OPTIONSでglow_aa指定の場合のみ、outlineとsemiboldは使用可能になります。
+
+		outline - 文字の縁取り色の指定
+			指定形式 outline:colour           
+				colour - 縁取り色 r-g-b
+
+		semibold - 文字を少しだけ太めにする。
+
+
+		●特記事項
+		･ これらの仕様は変更される可能性があります。
+		  特にglowの描画方法の変更、およびoutlineとsemiboldの廃止の可能性があります。
+		･ glow処理は負荷が高いです。(特にpseudo transparentのとき。)
+
+	例  $drawstring(abcd,10,10,,,255-128-64-128,)
+	    $drawstring(abcd,10,10,,,255-128-64-128,left vcenter,glow:2:255-255-255)
+	    $drawstring(efgh,10,10,,,255-255-255,vcenter glow_aa,glow:1:32-168-268 semibold)
+	    $drawstring(wxyz,10,10,,,255-255-255,glow_aa,glow:0:32-168-268 semibold offset:2:1 outline:32-168-268)
+	    $drawstring(wxyz,10,10,,,255-255-255,,glow:2:32-168-268:1)
+	    $drawstring(wxyz,10,10,,,255-255-255,elipchar)
+
+
+$drawrect(x,y,w,h,colour1,colour2,OPTIONS)
+	矩形を描画する関数。
+	座標(x,y)にサイズ(w,h)で矩形を描画する。
+
+	colour1 - 内部色 r-g-b-a形式
+	colour2 - 枠の色 r-g-b-a形式
+
+	OPTIONS - スタイル
+		aa - アンチエリアスをかける
+
+
+	例  $drawrect(0,50,50,50,255-128-64-128,,aa)
+
+
+$gradientrect(x,y,w,h,colour1,colour2,OPTIONS,peakpoint)
+	矩形内をグラデーションで塗りつぶす描画関数。
+	座標(x,y)にサイズ(w,h)で矩形を描画する。
+	
+	colour1 - グラデーション開始色
+	colour2 - グラデーション終了色
+
+	OPTIONS
+		vertical    垂直方向グラデーション。
+		horizontal  水平方向グラデーション。
+		aa          アンチエリアスをかける。
+		nonlinear   グラデーションが非線形。
+
+	peakpoint: 0-100
+		グラデーションの終点位置をシフトする。
+		0がデフォルト値で、colour1 --> colour2 に遷移する。
+		50のときは、colour1 --> colour2 --> colour1と遷移する。
+
+	例: $gradientrect(0,50,50,50,255-128-64-128,255-255-255,vertical aa)
+	    $gradientrect(0,50,50,50,255-128-64-128,255-255-255,,10)
+
+
+$drawblurrect(x,y,w,h,colour,level)
+	輪郭をぼかして矩形を塗りつぶす描画関数。
+	level - ぼかし度合い [1..7]
+
+
+$drawfocusrect(x,y,w,h)
+	指定の矩形にフォーカスを示す枠を点線で描画する関数。
+
+
+$drawthemerect(x,y,w,h,control,partId,stateId)
+	VisualStyleを使って矩形内にコントロール(ボタンやプログレスバー)を描画する関数。
+	画像として描画するだけなので実用性は低いかもしれない。
+
+	●特記事項
+	･VisualStyleで定義されていないコントロールを描画することはできない。
+	･少なくともWindowXP以上が必須。
+
+	control  : 描画したいコントロールの種類の名前を指定する。以下のいずれか。
+		window button rebar toolbar status listview header progress tab trackbar tooltip treeview spin scrollbar
+		edit combobox taskbar taskband startpanel explorerbar
+
+	partId: 指定したコントロールで描画したい部品のID。数値で指定する。
+		目安としてコントロールごとに以下の範囲の数値が使用出来る可能性が高い。
+		OSによっては部品が追加されているので、あくまで目安。
+		VisualStyleで定義されていない部品は、描画できない。
+
+		window: [1..37]
+		button rebar listview tooltip: [1..5]
+		toolbar: [1..6]
+		status treeview taskband: [1..3]
+		header spin: [1..4]
+		progress: [1..4]
+		tab trackbar scrollbar: [1..10]
+		edit: [1..2]
+		combobox: [1]
+		taskbar: [1..8]
+		startpanel: [1..11]
+		explorerbar: [1..12]
+
+	stateId: 部品の状態(選択状態など)を示すID。 状態を持たない部品の場合は0を指定する。
+	         stateIdとして0または1を指定して描画されないなら、その部品は定義されていない。
+
+	例: $drawthemerect(0,0,%el_width%,%el_height%,tab,10,0)      //tabのbody部分を描画
+	    $drawthemerect(,,,,progress,3,0)  //プログレスバーのバーを描画
+
+
+$drawroundrect(x,y,w,h,w2,h2,colour1,colour2,RESERVED)
+	角を丸めた矩形描画関数。
+	座標(x,y)にサイズ(w,h)で角を丸めた矩形を描画する。
+
+	●特記事項
+	w > 4 * w2 && h > 4 * h2 を満たす必要がある。
+
+	w2 - 丸みの幅
+	h2 - 丸みの高さ
+	colour1  内部色
+	colour2  枠の色
+
+	例  $drawroundrect(10,20,50,50,4,4,255-255-128-255,,)
+
+
+$drawellipse(x,y,w,h,colour1,colour2,RESERVED)
+	楕円描画関数。
+	座標(x,y)にサイズ(w,h)で楕円を描画する。
+
+
+$drawtriangle(x1,y1,x2,y2,x3,y3,colour1,colour2,OPTIONS)
+	(x1,y1),(x2,y2),(x3,y3)を頂点とする三角形描画関数。
+
+	OPTIONS
+		aa - アンチエリアスをかける
+
+	例: $drawtriangle(10,5,20,10,10,15,200-100-100,,aa)
+
+
+$imageabs(x,y,w,h,path,OPTIONS,n,alpha,OPTIONS2)
+	座標(x,y)にサイズ(w,h)で path で指定される画像を表示する。
+	画像が存在すればtrue、しなければfalseを返す。
+
+	dipsplays the image specified by path.
+	after the image is resized, it is cached on the memory. 
+
+	●特記事項
+	リサイズ後の画像をメモリ上に保持して、次に参照された場合の処理効率をあげる。
+	参照されなった画像は、そのうちメモリ上から削除される。
+	w,hを省略するとオリジナル画像サイズで表示し、キャッシュする。
+	(ただし、w,hを省略してもメモリ上にすでにキャッシュされてる場合は、
+	そのままキャッシュしてある画像サイズになる)
+
+	複数の縮小率を扱いたい場合、
+	縮小した後に拡大されると画質が悪い。
+	nodisplayやnoexpansionなどを利用して、
+	使用する縮小率の中で最も大きい縮小率で最初にメモリのキャッシュするのがよい。
+
+	path - 画像の絶対パス (or 画像が埋め込まれた AudioFile の path)
+
+	OPTIONS
+		<appearance>
+		nokeepaspect - アスペクト比を維持しない(nodisplay,archive,icon以外のオプションと排他)。
+		nodisplay    - メモリに読み込むだけで表示しない。
+		noexpansion  - 縮小はするが、拡大しない。
+
+		<align>	- それぞれ排他。
+		left right  - 水平アライン指定。
+		top bottom  - 垂直アライン指定。
+
+		<misc>
+		wc          - wildcard(*,?) を有効にする。
+
+		<read mode> - それぞれ排他。
+		archive     - archive reader経由でpathの画像を表示する。
+		              pathの書式はarchive readerに依存するが、書庫の絶対パス|書庫内ファイルパス が基本。
+		              例:  C:\aaa\image.zip|bbb/ccc.jpg
+		icon        - pathで指定されるiconファイル(*.ico)を表示する。
+
+		artreader   - pathで指定されるAudioファイルの埋め込み画像をfoobar2000のcoreのartwork readerで読み込む。
+		              埋め込み画像がなければ、Audioファイルのフォルダ画像を読み込む。ただし低速。
+		artreader_front  - pathで指定されるAudioファイルの埋め込み画像をfoobar2000のcoreのartwork readerで読み込む。
+		artreader_back   - pathで指定されるAudioファイルの埋め込み画像をfoobar2000のcoreのartwork readerで読み込む。
+		artreader_disc   - pathで指定されるAudioファイルの埋め込み画像をfoobar2000のcoreのartwork readerで読み込む。
+		artreader_icon   - pathで指定されるAudioファイルの埋め込み画像をfoobar2000のcoreのartwork readerで読み込む。
+		artreader_artist - pathで指定されるAudioファイルの埋め込み画像をfoobar2000のcoreのartwork readerで読み込む。
+		(artreader*** are currently disrecommended options because these option seem to be slow)
+
+	n - rotateflipのためのインデックス
+		1: 90
+		2: 180
+		3: 270
+		4: 左右反転 
+		5: 90 + 左右反転 
+		6: 上下反転 
+		7: 90 + 上下反転 
+
+	alpha - 不透明度 [0..255] (0が透明)
+
+
+	OPTIONS2 - shadow effect ($drawstringのglow効果参照)
+		glow:expand:colour
+		offset:x:y
+
+
+    例  $imageabs(10,10,50,50,C:\%album%.jpg)
+        $imageabs(10,10,50,50,C:\%album%.jpg,left top)
+        $imageabs(10,10,50,50,C:\%album%.jpg,,6)
+        $imageabs(10,10,50,50,C:\%album%.jpg,bottom,,128)
+        $imageabs(10,10,50,50,C:\%album%.jpg,bottom,,,glow:2:0-0-0 offset:4:4)
+        $imageabs(10,10,50,50,%path%,artreader)
+
+
+$imageabs_rc(rw,rh,srcx,srcy,srcw,srch,x,y,path,OPTIONS,n,alpha,OPTIONS2)
+	リサイズしてクリップした画像を表示する。
+	path で指定される画像をサイズ(rw,rh)にリサイズ後、
+	その部分領域(srcx,srcy,srcw,srch)を座標(x,y)にサイズ(srcw,srch)で表示する。
+
+	メモリ上に(rw,rh)でキャッシュする。
+	TFを評価したときに(rw,rh)が変化すると、画像を再読み込みする。
+	そのため、rw, rhは固定値で指定すべき。
+
+	画像が存在すればtrue、しなければfalseを返す。
+
+	OPTIONS imageabs参照
+    
+	例:
+	 $imageabs_rc(200,100,0,0,100,50,10,10,C:\%album%.jpg,,6,192)
+	 $imageabs_rc(200,100,0,0,200,100,10,10,C:\%album%.jpg,,)  ( = $imageabs(10,10,200,100,C:\%album%.jpg,left top,,) )
+	 $imageabs_rc(150,120,0,0,150,120,20,15,C:\%album%.jpg,hcenter vcenter,)  ( = $imageabs(20,15,150,120,C:\%album%.jpg,,,) )
+
+
+$drawimage(x,y,w,h,path,OPTIONS,n,aplha)
+	座標(x,y)にサイズ(w,h)で path で指定される画像を表示する。
+	キャッシュ動作を行わない$imageabs。
+
+	●特記事項
+	wとhを省略するとオリジナルのサイズで表示する。
+	TFが評価されるたびに画像の再読み込みを行う。
+
+	※処理効率的に推奨しない。
+
+	OPTIONS - imageabs参照。
+
+
+●描画補助
+
+$getlastpos(elem)
+	画像表示関数imageabs, imageabs_rcの直後で、実際に画像を描画した座標を取得する。
+	また、measurestringの結果を取得するときにも使う。
+	mempos指定したdrawstringの直後でも座標を取得できる。
+
+   	elem - 取得したい要素を指定する。
+		x :  left
+		y :  top
+		w :  width
+		h :  height
+		r :  right
+		b :  bottom
+
+	例:  
+		$puts(img_path,C:\%album%.jpg)
+		$imageabs(10,4,100,100,$get(img_path),top noexpansion,)
+		$imageabs($getlastpos(x),$getlastpos(b),$getlastpos(w),20,$get(img_path),top nokeepaspect,6)
+		$gradientrect($getlastpos(x),$getlastpos(y),$getlastpos(w),$getlastpos(h),255-255-255-128,255-255-255-255)
+
+
+$measurestring(text,x,y,w,h,OPTIONS)
+	$drawstringで文字列を描画した場合の表示領域を計算する。
+	結果として、表示領域の水平幅を返す。
+	表示領域の結果は$getlastposで取得する。
+
+	●特記事項
+	drawstringで、glow_aaを指定してglow効果をかけた場合、
+	その表示範囲はmeasurestringの結果とは一致しないことがある。  
+
+	OPTIONS - $drawstring参照
+
+
+$getimagewidth(path), $getimageheight(path)
+	pathで指定される画像が$imageabs $imageabs_rcで読み込まれてメモリにキャッシュ中の
+	画像であれば、リサイズ済みの水平幅、垂直幅を返す。
+
+	●特記事項
+	$imageabs $imageabs_rcの後ろでしか使用できない。
+
+
+$setparcentmode(bx,by,bw,bh)
+	座標の指定モードを設定する。
+	ウィンドウの表示領域が
+ 	(0,0) ～ (%_width%, %_height%)であるところを、
+	パーセント値指定モードでは、(0,0) ～ (100,100)にマッピングする。   
+	x,y,w,h個別に設定できる。
+
+	●特記事項
+	x,y,w,hのいずれかを引数にもつ関数すべてに影響を及ぼす。
+
+	bx - x座標指定モード
+		0:Splitter内の絶対座標で指定するモード
+		1:Splitterのサイズに対する相対値(パーセント値)での指定とする。
+	by - y座標指定モード
+	bw - w座標指定モード 
+	bh - h座標指定モード 
+
+
+$getsyscolour(index)
+	システムカラーをr-g-b形式で返す。
+
+	index:[0-30] システムカラーのインデックス
+
+
+$averagecolour(colour1,colour2[,･･･])
+	r-g-b-a形式の色の平均する。
+	(colour1 + colour2 +･･･)/N
+
+
+$blendcolour(colour1,w1,colour2,w2,[,･･･])
+	r-g-b-a形式で重みつき平均を返す。
+	(w1*colur1 + w2*colour2 + ･･･ + wN * colourN)/ (w1 + w2 + ･･･ + wN)
+
+
+$addcolour(colour1,colour2[,･･･])
+	r-g-b-a形式の色を加算する。
+	colour1 + colour2 + ･･･ + colourN
+
+
+$subcolour(colour1,colour2[,･･･])
+	r-g-b-a形式の色を減算する。
+	colour1 - colour2 - colour3 ･･･ - colourN
+
+
+$findfile(path,[path2,path3,...])
+	path(ワイルドカード可)で指定されるファイルが存在すれば、最初に見つかったファイルのパスを返す。
+	ファイルが無ければfalseを返す。
+
+
+●ボタン関数
+
+$textbutton(x,y,w,h,text,mover_text,command,options1,options2)
+	ボタンを作る。
+	Per Trackのみ有効。 Per Secondには記述しないこと。
+	
+	text -  ボタンのラベル
+	mover_text - マウスホバー時のボタンのラベル
+
+	command - "命令種別:引数"の書式で指定 
+
+		※余分なスペースを入れないこと
+		;で区切って複数命令指定可。
+
+		●特記事項
+		(1) :や;はスプリッタ文字になっているので、これらの文字が含まれる引数は、
+		  上手くパース出来ない可能性が高い。
+		(2) 処理時間のかかる命令を指定しないこと。
+		(3) 複数命令指定されている場合、命令の実行順序は保証されない。
+
+		[命令]
+		COMMAND:commandpath
+			commandpathで指定されるメニューコマンドを実行する。
+			COMMAND:View/Equalizerや、
+			COMMAND:File/Preferences;COMMAND:Playback/Play
+			というように指定する。
+			command_pathもTFとして評価されるので注意
+			COMMAND:'View/Equalizer'としておくのを推奨。
+
+		CONTEXT:contextpath
+              		contextpathで指定されるコンテキストメニューコマンドを実行する。
+			コンテキストメニューの処理対象は、%ps_tfmode%に従う。
+ 			%ps_tfmode%が0の場合、再生トラック。1の場合、ActivePlaylistの選択トラック。
+			CONTEXT:Propertiesみたいに指定する。
+			contextpathもTFとして評価されるので注意
+
+
+		PANELSHOW:cap:sh
+			captionがcapである子パネルの表示/非表示を切り替える。
+			sh - 表示状態の指定 
+				0  - 非表示
+				1  - 表示
+				-1 - 表示/非表示のトグル
+
+		TFMODE:mode
+			Per Trackのtitleformatのモードを変更する。
+			mode - モード
+				0  - nowplayingモード
+				1  - follow curosrモード
+				-1 - トグル
+
+		REFRESH
+			TFのPerTrack, PerSecondを更新する。
+
+
+		SETGLOBAL:name:val
+			グローバル変数 nameにvalを設定する。
+			nameとvalに":"が含まれないように注意すること。
+
+		SETTAG:name:val
+			タグnameにvalを設定する。
+			%ps_tfmode%が0の場合は再生トラック、%ps_tfmode%が1の場合はActivePlaylistの選択トラックが処理対象のトラックになります。
+			nameとvalに":"が含まれないように注意すること。
+
+		SETDELTATAG:name:delta_value:min_value:max_value
+			タグnameの中身が数値であった場合に、delta_valueを加算した値に変更する。
+			タグnameが存在していなかった場合は、min_valueを設定する。
+			処理対象トラックは、%ps_tfmode%が0の場合、再生トラック。1の場合、ActivePlaylistの選択トラック。
+
+
+	options1 デフォルトの装飾指定 (スペースで区切って複数指定可)
+		fontcolor:r-g-b         - テキストの色
+		brushcolor:r-g-b-a      - ボタン矩形の塗りつぶし色	
+		pencolor:r-g-b-a        - ボタン外枠の色
+		left top bottom right   - テキストの位置
+
+	options2: マウスオーバー時の装飾指定 (スペースで区切って複数指定可)
+		fontcolor:r-g-b         - テキストの色
+		brushcolor:r-g-b-a      - ボタン矩形の塗りつぶし色
+		pencolor:r-g-b-a        - ボタン外枠の色
+		left top bottom right   - テキストの位置
+
+
+   例   $textbutton(0,0,80,20,play,play,COMMAND:Playback/Play,fontcolor:64-64-64 brushcolor:192-192-192-128 pencolor:0-0-0,fontcolor:32-32-32)
+	$textbutton(100,0,80,20,Resize,Resize,PANELSHOW:aaa:-1;REFRESH,fontcolor:64-64-64 left bottom,fontcolor:32-32-32)
+
+
+
+$imagebutton(x,y,w,h,path,mover_path,command,options1,options2)
+	画像ボタンを作る。
+	Per Trackのみ有効。 Per Secondには記述しないこと。
+	画像の内部処理としては$imageabsと扱いが等しく、メモリ上にキャッシュされる。
+	w,hが省略されると、pathで指定される画像のオリジナルサイズになる。
+	commandはtextbuttonと共通。
+
+	options1 - 画像表示オプション
+		nokeepaspect
+		left top bottom right
+
+	options2 - マウスホバー時の画像表示オプション
+		nokeepaspect
+		left top bottom right
+
+
+●GDI系描画関数
+	GDIを使って描画する。シンプルな分、高速に処理される場合がある。
+
+$drawtext(text,x,y,W,H,r-g-b,OPTIONS)
+	GDI文字列描画関数
+	textを座標(x,y)に出力
+
+	OPTIONS
+		left hcenter right       水平アライン指定
+		top  vcenter bottom      垂直アライン指定
+		noclip                   クリップしない
+
+
+$drawtextex(text,x,y,W,H,r-g-b,OPTIONS)
+	GDI文字列描画関数2
+	textを座標(x,y)に出力
+
+	OPTIONS
+		left hcenter right       水平アライン指定
+		top  vcenter bottom      垂直アライン指定
+		noclip                   クリップしない
+		wrap                     ラップアラウンド許可指定(vcenter、bottomとは排他)
+		end_ellipsis             テキストがクリップされる場合、テキストの最後を...に置き換える
+	
+	例: $drawtextex(text,0,0,%_width%,%_height%,0-0-0,hcenter vcenter end_ellipsis)
+
+
+$gettextwidth(text, [FONTNAME, SIZE, OPTIONS])
+	GDI(drawtext,drawtextex)でtextを描画したときのテキストの水平幅を返す。
+	fontの指定も可(オプションは$font参照)。font指定は省略可
+
+
+$gettextheight([ FONTNAME,SIZE,OPTIONS] )
+	GDIで描画したときのテキストの垂直幅を返す。
+	fontの指定も可(オプションは$font参照)。font指定は省略可
+
+
+$fillrect(x,y,w,h,colour,RESERVED)
+	矩形塗りつぶし関数
+
+
+$fillroundrect(x,y,w,h,w2,h2,colour1,colour2)
+	角の丸い矩形塗りつぶし関数
+
+
+●Panel操作系関数
+どうも描画関数とTFの枠が一緒だと効率が悪いので、
+将来的には別枠にする予定。
+
+$showpanel(i,sh)   or  $showpanel_c(caption,sh)
+	パネルの表示、非表示変更関数
+
+	i  - 子パネルリストでの何番目か(0から数えて)
+	sh - 表示状態
+		0 - 非表示
+		1 - 表示
+
+$movepanel(i,x,y,w,h)  or  $movepanel_c(caption,x,y,w,h) 
+	Forced layout指定された子パネルを、座標(x,y) サイズ(w,h)に移動させる。
+
+	i - 子パネルリストでの何番目か(0から数えて)
+
+
+$getcaption(i)
+	子パネルリストでのi番目パネルに設定されているキャプションを返す。
+
+
+$isvisible_c(caption)
+	パネルの表示状態を返す。
+
+
+
+●免責事項など
+このソフトウェアを使用したことによって生じたすべての損害・障害・権利侵害・不具合等に関して、ソフトウェア作者は、一切の責任を負いません。
+たとえバグがあったとしても、修正の義務を負いません。
+この事項に了承頂ける方のみ、各自の責任においてご使用ください。
+
+
+･本ソフトウェアには、下記の使用条件とともに配布されているソフトウェアの一部が含まれています。
+foobar2000 0.9.5 SDK
+  Copyright (c) 2001-2008, Peter Pawlowski
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+  Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. 
+  Neither the name of the author nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+  Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Columns UI SDK 6.3.1
+
+
+･ライセンスについて
+  Copyright (c) 2008, ssenna
+
+  バイナリ形式で再頒布する場合、頒布物に付属のドキュメント等の資料に、上記の著作権表示、本条件一覧、および下記免責条項を含めること。
+  書面による特別の許可なしに、本ソフトウェアから派生した製品の宣伝または販売促進に、著作権所有者または貢献者の名前を使用してはならない。
+
+  このソフトウェアは著作権所有者および貢献者により「現状のまま」提供されるものとし、商業的な使用可能性や特定の目的に対する適合性などの保証を含め、明示的暗黙的を問わず、いかなる保証もありません。
+  著作権所有者および貢献者は、事由の如何を問わず、損害発生の原因の如何を問わず、かつ責任の根拠が契約であるか厳格責任であるか（過失その他）不法行為であるかを問わず、仮にそのような損害が発生する可能性を知らされていたとしても、
+  このソフトウェアの使用から発生した直接損害、間接損害、偶発的な損害、特別損害、懲罰的損害、または結果損害（代替の物品やサービスの調達、使用機会やデータや利益の損失、業務の中断を含む、あらゆる損害）に対して一切責任を負いません。 
+
+
+=======================-
+
+<<changelog>>
+v0.3.8a
+･$init_ps_globalでグローバス変数を保存するか、しないか選択できるようにした。
+･$delete_ps_global追加。
+･drawthemerectが機能しない不具合を修正。
+･%ps_user_profile_path%の追加(v0.3.8.1a)
+･レイアウトで、pssだけが存在するような場合にTABキーで落ちるのを修正したつもり。(v0.3.8.2a)
+･フォント設定処理で、落ちるのを修正したつもり。(v0.3.8.2a)
+･引数省略時の$fontの挙動を少し変更。(v0.3.8.2a)
+･$fontが効かない場合があるのを修正。(v0.3.8.3a)
+
+v0.3.7a
+･グローバル変数の機能を追加。(設定ダイアログはかなりいい加減。)
+ $set_ps_globalとボタン関数で設定、$get_ps_globalで参照可能。
+･クラッシュするバグの修正。(v0.3.7.1a)
+･$init_ps_global追加。(v0.3.7.1a)
+･グローバル変数の全消去ボタン追加。(v0.3.7.1a)
+･ボタン関数でタグに書き込む機能追加。(v0.3.7.2a)
+･ボタン関数のCONTEXTの処理対象トラックをtfmodeで切り替わるようにした。(v0.3.7.2a)
+ tfmodeがnowplayingのときは演奏トラック。
+ follow cursorのときは、ActivePlaylistの選択トラック。
+･実行できないコマンドがあったのを修正したつもり。(v0.3.7.2a)
+･%ps_foobar2000_path%を修正。(v0.3.7.2a)
+･%ps_foobar2000_path%がcomponentフォルダになっていたので再度修正。(v0.3.7.3a)
+･%ps_track_state%を追加。(v0.3.7.3a)
+･%ps_foobar2000_path%をもう1回修正。(v0.3.7.4a)
+･ボタンがちらつくことがあるのを修正したつもり。(v0.3.7.4a)
+･foo_coversに対応したつもり。(v0.3.7.4a)
+･%ps_playback_ordr%追加。(v0.3.7.4a)
+
+v0.3.6a
+･%ps_isplaying%, %ps_ispause%追加。
+･設定ダイアログの整理。
+･設定できるTFの文字数を2倍にしたつもり。
+
+･パネルの外にマウスが出たときにボタンがホバー状態のままになってしまうのを修正。(v0.3.6.3)
+･実行ファイルパスを取得する%ps_foobar2000_path%追加。(v0.3.6.3)
+･クラッシュすることがあるバグのいくつかを修正したつもり。(v0.3.6.4)
+･最新のSDKに更新。(v0.3.6.4)
+
+v0.3.5a
+･SDKを更新。
+･拡張Titleformatの仕様をELPlaylistにあわせた。(結構変わっているので、なんか動かなくなってるかも)
+
+v0.3.4a
+･drawstringにglow オプションを実験的に追加。
+･使えないfontがあったのを修正。
+･seek時にPer Secondを評価するように修正。
+
+
+v0.3.3a
+･設定ダイアログからの各パネルのコンフィグを呼び出せるようにした。(パネルが対応していれば)
+･Per Secondのちらつきをおさえるようにした。
+ v0.3.3.1a
+ + 致命的なバグを修正
+
+v0.3.2a
+･TFモードのalways now playingモードを廃止して、now playingモードで
+ 一回も再生していない場合に、follow cursorにしていたのをやめた。
+･ボタン関数で、動的にコマンドが登録される場合にも対応した。
+･関数いくつか追加。(drawtriangle,drawtextexなど)
+･画像表示関数にalpha指定追加。
+
+
+v0.3.1a
+･splitterを入れ子にした場合向けに 背景透過オプションを追加。
+･矩形グラデーション描画関数追加。
+･follow cursorモードの挙動を少し変更。
+
+v0.3.0a
+･Per TrackのTFのモードとして follow curosrモード追加。
+･TFのモード切り替え用にボタン関数のコマンド追加。
+ TFのモードは、設定ダイアログか、ボタン関数でのみ切り替え可。
+･パネル表示状態を返す関数追加。
+･動的に登録されるメニューコマンド向けにメニューコマンドの取得タイミングを少し変えてみた。
+ (根本的な対処ではない)
+･テキスト系関数のアライン追加
+
+v0.2.9a
+･リサイズしてクリップする画像表示関数$imageabs_rc追加
+･パネル非表示で起動するオプションをパネルごとに追加。(ボタンとかで表示非表示を切り替える人向け)
+
+
+v0.2.8.1a
+･ボタン関数にTFの更新の実行REFRESHを追加。
+
+v0.2.8a
+･imgageabsのrotateflipの動作を修正。
+･$findfile関数追加
+
+v0.2.7a
+･ 画像表示関数を用途別にimageabsとdrawimageに分割。
+･ 画像ボタン追加。
+･ ボタン関数にコンテキストメニューの実行などを追加。
++･メニューコマンドリストの取得を少しだけ変更
+
+v0.2.6a
+･キャプションを変更した状態で、パネルレイアウトを変更すると落ちる場合があるのを修正。
+
+v0.2.5a
+･textbutton関数でCulumnsUIのレイアウトpresetを変更した場合落ちる不具合を修正。
+
+
+v0.2.4a
+･textbutton関数を少し実装してみた。こんな感じだろうか？
+
+
+v0.2.3a
+･ColumnsUIのレイアウト設定からパネル構成を変更したあとで、終了時などに子パネルがハングしてしまうことがあったのを修正。
+･パネルサイズのリミットを反映しないオプションを追加。
+
+
+v0.2.2a
+･トラック単位(Per Track)のTitleformatと秒単位(Per Second)のTitleformatを分けた。
+  秒単位のほうはくれぐれも重い処理を入れないこと。特にXPならGDI関数(今は2個しかないけど)が推奨
+  全関数が使えるつもりだが、画像表示や透明色の使用は非推奨。
+･Applyボタン実装
+･サイズ変更可能なボーダーの機能 on/off選択可
+･画像表示関数に回転反転など実装
+
+
+v0.2.1a
+･角を丸めた矩形描画関数を試しに作ってみた。(かなり適当)
+ + 曲線を含む描画関数にアンチエイリアスを施すようにした。
+･起動時の処理量を若干減らした。
+･forced layoutでのpadding設定をオプションにした。
+
+
+v0.2.0a
+･パネル自動配置のときにボーダーを操作してもパネルサイズが変化して見えなかったのを修正。
+･楕円描画関数追加
+
+
+v0.1.9a
+･パネルサイズの計算で、初期サイズをとてつもなく大きいサイズにしてしまうバグを修正。
+
+v0.1.8a
+･ButtonsやSeekbarなどの背景が透過しなかったのを修正。
+･Force layoutのときに、splitterのサイズに対するパーセント値で、パネルの位置とサイズ指定できるようにした。
+
+v0.1.7a
+･細かいバグを修正
+･Force layoutのときにpadding設定を無効にした、かつ パネルの最小、最大サイズを反映するようにした。
+
+v0.1.6a
+･色の指定でR-G-B-Aと透明度A(0～255)を指定できるようにした。(R-G-Bの場合は不透明と解釈)
+･showpanelが効かないバグを修正
+
+v0.1.5a
+･Splitter本体の描画カスタマイズ可能なようにした。
+ PanelsUI ライクな関数を少しだけ実装。
+
+v0.1.4a
+･Force Layoutの項目でTitleFormattingが使えるようにした。
+ %_width%、%_height%でPanel Stack Splitterの水平、垂直サイズを参照可能
+･ColumnsUIのLayoutでルートのsplitterに設定したときに、
+ 最初に表示されるサイズが異常になってしまっていたのを修正。
+
+v0.1.3a
+･Paddingで設定したスペースをサイズ変更可能なボーダーとして扱えるように変更。
+ クリックしたらマウスカーソルが変化するのでそのままドラッグアンドドロップでサイズ変更できるようにした。
+･ColumnsUIのLayoutページでのConfigureボタンで設定ダイアログを呼び出せるようにした。
+
+v0.1.2a
+･Channel spectrum panelのFast pseudo-transparent modeが有効になるように対応。
+ Panel Stack Splitterに設定した画像を背景にできるようになった。
+･画像のアスペクト比 変更設定を追加。
+
+v0.1.1a
+･ use imageを有効かつuse color無効のときにリソースリークするのを修正
+･ 不正なアスペクト比になるのを修正
+
+v0.1a
+･公開版

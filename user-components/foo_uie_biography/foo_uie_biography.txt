@@ -1,0 +1,421 @@
+foo_uie_biography v0.4.2.3
+for foobar2000 v1.0+, Columns UI0.3+, WindowsXP+
+(動作確認は、Windows Vistaのみ)
+
+SDK version
+foobar2000:2009-05-21
+       cui:6.3
+
+
+●概要
+アーティストのバイオグラフィー(プロフィール)や画像、アルバムのカバー画像をダウンロード･表示するパネル。
+表示するデータは、タグの%artist%や%album%を参照してインターネットを通じてLast.fmから取得します。
+foobar2000 CoreのArtwrok Reader経由でローカルHDDにある画像を優先して表示することが可能です。
+
+デフォルトの設定では英語版サーバーに接続する設定になってますので、
+Biography Server->Last.fmのサーバー設定から日本語版(Japanese)を選択してください。
+
+
+
+●基本的な機能
+[情報の取得機能 (DefaultUIやColumnsUIがなくても機能するもの)]
+・外部コンポーネントにTitleformatとして、バイオグラフィー情報など再生している曲に関するメタ情報を公開。
+  (%lastfm_bio%など)
+  ※ただし、パネルが存在しない場合、Execute query even if no biography view panels existをonにする必要があります。
+・選択したアーティストのピクチャーをまとめてダウンロードして指定のフォルダに保存。
+・選択した曲のバイオグラフィー情報をユーザー定義タグに書き込み。
+
+[DefaultUIのUI Elementや、ColumnsUIのUI Extensionとしての機能]
+・再生している曲のアーティストに関するバイオグラフィー情報の表示。
+・再生している曲のアーティストに関する画像の表示。
+・再生している曲のアルバム情報の表示。(ただし、ほとんどのアルバムの情報は登録されていない)
+・再生している曲のアルバムのカバー画像の表示。
+
+
+
+●設定
+【 Biography Server 】
+	Current source list:
+		テキスト情報や画像を検索するときの検索ソースを選択したり順序を指定できます。
+
+	Remap meta
+		artistとalbumのメタ情報を、指定のTitleformatで差し替えます。
+		Titleformatを評価した結果が、空文字列であった場合は、差し替えられません。
+		%<xxx>%が使用可能です。
+		複数値を持つフィールドを%<xxx>%で参照した場合、
+		どの値を使用するかを、パネル上の右クリック->Select Artistで切り替えることができます。
+
+		Core Buit-in ArtworkReader、Core Stub Imageでは無効です。
+
+【Misc】
+	Execute query even if no biography view panels exist.
+		パネルがなくてもバイオグラフィー情報のサーチを実行します。
+
+	Provide artwork to other artwrok viewers
+		ほかのcomponentのアートワークビューワーに検索結果の画像を表示します。
+		ただし、foo_coversなど他のcomponentと激しく競合します。
+		また、いくつかのartwrok viewer(PSSなど)では表示できません。
+		ELPlaylistを使っている場合は、 imageabsでnodelayを使用しないでください。
+		問題が出るようならオフにしてください。
+
+This feature conflicts artwork provider components such as foo_covers, because components loading order seems to be not predetermined.
+Moreover, it is not available for some artwork viewer components (e.g. PanelStackSplitter) in order to avoid severe performance degration.
+(if you use ELPlaylist, nodelay option of $imageabs is not allowed.)
+
+
+
+【 Last.fm 】
+	[General]
+		Server(Language):
+			サーバーを選択します。日本語ならJapaneseを指定してください。
+			とにかくここだけは設定してください。
+			~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+		Image Limits:
+			アーティスト画像をダウンロードするときの上限値を指定します。
+			サーバー負荷を考慮して、6枚までに制限しています。
+
+		Exclusion Filter:
+			オンラインサーバ(Last.fm)へ検索に行かない条件をQuery Syntaxで指定します。
+			シンタックスの詳細は、foobar2000\Query Syntax Help.htmlを参照してください。
+
+		Expiry Interval of text cache :
+			キャッシュしたテキストの有効期間を指定します。
+			有効期間が切れた場合、オンラインサーバーまでデータの更新にいきます。
+			0 daysの場合、期限切れは無効になり、キャッシュが存在すればサーバーに更新にいきません。
+
+		Image cache will expire when text cache expires:
+			テキストキャッシュが期限切れした場合、画像のキャッシュも一緒に更新します。
+
+		Create folder when cache path specify nonーexisting folder
+			キャッシュを保存するときにキャッシュのパスが存在しないフォルダを指定していた場合、
+			フォルダを作成します。
+		
+		Artist picture criteria
+			アーティスト画像をダウンロードするときの順序づけの基準を指定します。
+				Popurarity :最も人気の高い画像をダウンロードします。
+				Date Added :最近に追加された画像をダウンロードします。
+
+	[Artist/Album]
+		Enable cache
+			キャッシュを有効にします。
+			ダウンロードしたデータをローカルHDDに保存したり、次に検索するときにわざわざオンラインサーバーまで検索していかないでキャッシュから読み込みます。
+	
+		Search cache after online search:
+			先にオンラインサーバで検索します。データが取得できなかった場合はローカルHDD内のキャッシュを検索します。
+	
+		Disable saving downloaded data
+			キャッシュからの読み込みを有効にしますが、ダウンロードしたデータは保存しません。
+
+		Specify file paths
+			キャッシュ保存先(読込先)ファイルパスを指定します。
+			※存在しないフォルダを指定された場合は自動でフォルダを作成しようとします。
+
+		foobar2000 folder
+			foobar2000のインストールフォルダにlastfmフォルダを作成して
+			その中にキャッシュを保存します。ファイル名は自動です。
+			Vistaの場合、UACが有効だとキャッシュの保存が全く機能しません。
+			VistaでUACが有効の場合は、下のUser Profile folderを使用を推奨します。
+
+		User Profile folder
+			User Profile(各ユーザーの設定)保存フォルダに、lastfmフォルダを作成して
+			その中にキャッシュを保存します。ファイル名は自動です。
+
+		Text cache path
+			Specify file pathsのときに有効になります。
+			ダウンロードしたテキスト情報の保存先(読込先)ファイルパスを拡張子を含めないで指定します。
+			TitleFormatとして処理されます。
+			TitleFormatの評価の結果が空だと、キャッシュ無効とみなします。
+
+		Image cache path
+			Specify file pathsのときに有効になります。
+			ダウンロードした画像情報の保存先(読込先)ファイルパスを拡張子を含めないで指定します。
+			TitleFormatとして処理されます。
+			TitleFormatの評価の結果が空だと、キャッシュ無効とみなします。
+			拡張子はjpg、png、bmp、gifから自動的に選択します。
+	
+		Artist/Album Field to be queried:
+			検索するときのキーワードをTitleFormatで指定します。
+
+
+
+
+【 Core Buit-in ArtReader 】
+	タグ埋め込み画像などを表示します。本体組み込みのArtwork Readerを使用していますので、
+	設定や仕様はそれに従います。
+
+
+
+【 パネルの設定 】
+	色とか配置とかが設定できます。適当に変更してみてください。
+	注意:一部のOpenTypeフォントは使用できません。
+
+	Use glow effect to text
+		Vistaであれば、テキストにglow効果をかけることができます。
+		ただし、glow効果の色はVisualStyleのテーマで決まっていて、変更することができません。
+		テキストとglowの色が同じになってしまうと、テキストが消えてしまうようです。
+
+
+
+【Wikipedia】
+Wikipediaから適当に、アーティストとアルバムに関するテキスト情報を取得します。
+Wikipediaのフォーマットは、解析するには完全な一貫性がないため、変なところを抜きだしてくる可能性があります。
+WikipediaはCase Sensitiveなため、アルファベットの大文字小文字含めてキーワードが一致する必要があります。
+
+
+Disambiguation Keywordは、曖昧さの回避のために付加されるキーワードです。
+日本語の場合は、
+	Artist: 歌手
+	Album: アルバム
+と指定すると上手くいくことが多いようです。将来、ここらへんの仕様は変えるかもしれません。
+
+
+
+
+● Titleformat
+再生中のトラック(正確にはパネルで表示されているトラック)のみ下記のフィールドが他のcomponentから利用できます。
+フィールドが有効になるのに遅延が存在しますので、トラックが切り替わった瞬間には下記のフィールドは無効です。
+そのため、Per Second的なところで利用する必要があります。
+(フィールド名は変更するかもしれません。)
+
+%lastfm_bio%
+%lastfm_similar_artist%
+%lastfm_artist_playcount%
+%lastfm_artist_listeners%
+%lastfm_album_playcount%, 
+%lastfm_album_listeners%,
+%lastfm_album_content% (もし存在すれば)
+
+[注意]
+パネルが1枚もレイアウトされていなければ、Execute query even if no biography view panels existをオンにする必要があります。
+
+
+
+
+● Context Menu
+
+・タグ書き込み
+	Context Menu -> Tagging -> Get Track Info From Last.fm...
+		以下のユーザー定義タグにダウンロードした情報が書き込まれる。
+		<PLAY COUNT>,
+		<LISTENERS>,
+		<RATING> = log10(2*playcount +1)
+
+	Context Menu -> Tagging -> Get Artist Info From Last.fm...
+		以下のユーザー定義タグにダウンロードした情報が書き込まれる。
+		<BIOGRAPHY>,
+		<SIMILAR ARTIST>
+
+・画像のダウンロード
+	Context Menu -> Utils -> Get Artist Pictures From Last.fm...
+		アーティスト画像を指定のフォルダにダウンロードします。
+		枚数制限はほぼありません。(一応2000枚まで)
+		デフォルトパスの設定は、Save Imageと共通です。
+		枚数が多いとかなり時間がかかります。
+
+	Context Menu -> Utils -> Get Album Art From Last.fm...
+		アルバム画像を指定のフォルダにダウンロードします。
+		デフォルトパスの設定は、Save Imageと共通です。
+
+[注意]
+ Remap metaで複数値を持つフィールドを指定した場合、最初の値が選択されます。
+
+
+
+●FAQ
+・スクロールしない
+  本体設定のPreference->General->otherの
+  Mouse wheel: scroll the object currently below pointer rather than the object having focus
+  の設定を変えてみれば解決するかも。
+
+・フォント関係(gdi++、OpenTypeフォント)
+  作者としては興味ないです。
+
+
+
+●免責事項など
+このソフトウェアを使用したことによって生じたすべての損害・障害・権利侵害・不具合等に関して、ソフトウェア作者は、一切の責任を負いません。
+たとえバグがあったとしても、修正の義務を負いません。
+この事項に了承頂ける方のみ、各自の責任においてご使用ください。
+
+
+･本ソフトウェアには、下記の使用条件とともに配布されているソフトウェアの一部が含まれています。
+foobar2000 0.9.5 SDK
+  Copyright (c) 2001-2008, Peter Pawlowski
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+  Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. 
+  Neither the name of the author nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+  Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Columns UI SDK 6.3.1
+
+
+･ライセンスについて
+  Copyright (c) 2009-, ssenna
+
+  バイナリ形式で再頒布する場合、頒布物に付属のドキュメント等の資料に、上記の著作権表示、本条件一覧、および下記免責条項を含めること。
+  書面による特別の許可なしに、本ソフトウェアから派生した製品の宣伝または販売促進に、著作権所有者または貢献者の名前を使用してはならない。
+
+  このソフトウェアは著作権所有者および貢献者により「現状のまま」提供されるものとし、商業的な使用可能性や特定の目的に対する適合性などの保証を含め、明示的暗黙的を問わず、いかなる保証もありません。
+  著作権所有者および貢献者は、事由の如何を問わず、損害発生の原因の如何を問わず、かつ責任の根拠が契約であるか厳格責任であるか（過失その他）不法行為であるかを問わず、仮にそのような損害が発生する可能性を知らされていたとしても、
+  このソフトウェアの使用から発生した直接損害、間接損害、偶発的な損害、特別損害、懲罰的損害、または結果損害（代替の物品やサービスの調達、使用機会やデータや利益の損失、業務の中断を含む、あらゆる損害）に対して一切責任を負いません。 
+
+
+
+==========履歴==========
+v0.4.2.4
+･常にLast.fm APIの autocorrectをonにした。
+
+v0.4.2.3
+･ウムラウトなど、HTMLエスケープ文字の一部をサポート。
+･細かい修正。
+
+
+v0.4.2.2
+･Run External Scriptで、前回と同じコマンドであれば実行しないようにした。
+･Provide artwork to other... がAPIの仕様が変わって効率が悪く遅くなりすぎていたので、少し高速になるようにした。
+
+v0.4.2.1
+･track infoをダウンロードしてタグ書き込みできるようにした。
+･CoreのStub Imageを読めるようにした。代わりに、Artist/Album image when no image can be found:を削除。
+
+v0.4.2.0
+･Draw Border around Album Art, Gloss effect for Album Artを追加。
+･いくつかのバグ修正
+･WikipediaのURLに使えない禁則文字に対する対応。
+･設定ダイアログの整理。
+･DUIのときに、ボックス色がDUIの色設定を反映するようにした。
+
+v0.4.1.0
+･Wikipediaからの情報取得追加。
+･WinXPで再描画が上手くいかない場合があるのを修正(v0.4.1.1)
+
+v0.4.0.0
+･v1.0に対応。
+･DUI対応。
+･Layout Editing Modeが実装されていなかったのを修正。(v0.4.0.1)
+･PreferencesのReset Pageに対応。(v0.4.0.1)
+･画像保存系のコンテキストメニューが落ちるようになっていたのを修正。(v0.4.0.2)
+･キャッシュのパスが存在しないディレクトリの場合にディレクトリを作成する設定で、
+ キャッシュのパスが不正または、長いとき、落ちる場合があるのを修正(v0.4.0.3)
+･フォントレンダラがGDIの場合に、異常に処理が重いフォントが存在するので、
+ 初期フォントレンダラをGDI+に変更。(v0.4.0.3)
+･DUIの場合に、Custom ColourのFontが効かないのを修正。(v0.4.0.3)
+
+v0.3.4.0
+･スクロールバーを表示するモードを追加。
+･キャッシュのパスの指定で、パスの指定として無効な禁則文字のうち、"?"を置換していなかったのを修正。
+･Remap metaを無効にした状態で、BiographyViewが提供しているコンテキストメニューを呼び出すと、落ちるバグの修正。
+･タブキーでハングするケースがあるのを修正。(0.3.4.1)
+･キャッシュファイルとして、リモートのファイルを指定されるとクラッシュする場合があるのを修正。(0.3.4.2)
+･アルバム画像の一部で、より高い解像度をダウンロードできる場合があったので、修正。(0.3.4.3)
+･コンテキストメニューのGet Artist Info...で、複数アイテムを選択していた場合にタグ更新が重なってしまう問題の修正。(0.3.4.4)
+･%lastfm_album_playcount%, %lastfm_album_listeners%, %lastfm_album_content%追加。(0.3.4.4)
+･特定の条件下で稀にデッドロックする場合があるのを修正。(0.3.4.5)
+･ごく稀にクラッシュする場合がある(らしい)のを修正。(0.3.4.5)
+･画像をダウンロードするコンテキストメニューのGet *** From Last.fm...で、複数トラックに対してまとめて処理できるように修正。(0.3.4.6)
+
+
+v0.3.3.0
+･フォントのレンダラをGDIかGDI+かを選択できるようにした。
+･%<xxx>%の仕様を変更。
+･他細かい修正。
+･文字色の指定が効かなくなっていたのを修正(v0.3.3.1)
+･%<xxx>%の実装がダサすぎたのでもう1回修正(v0.3.3.2)
+･font rendererが保存されない問題を修正(v0.3.3.3)
+
+v0.3.2.0
+･テキスト系キャッシュの拡張子に関する仕様を変更。
+ 拡張子を"lfml"に固定。
+･画像のキャッシュが複数候補ある場合、更新日が新しい方を読み込むように修正。
+･選択できる言語の追加(svとcn) (v0.3.2.1)
+･MBID関係の設定が保存されないバグの修正 (v0.3.2.2)
+
+v0.3.1.0
+･artistとalbumをダブルクリックで切り替えられるようにした。
+･外のartwrok viewerからartwrokを見られるようにした。(実験的なオプション)
+･パネルがないときでも、サーチを行えるようにした。
+･キャッシュの指定がSpecify File Pathsの場合に、キャッシュパスのTFでRemap metaが有効にならないのを修正(v0.3.1.1)
+･Use glow effect to textが効かなくなっていたのを修正(v0.3.1.2)
+･アーティスト画像をダウンロードするときの優先基準として人気順/追加日順を指定できるようにした。(v0.3.1.2)
+･右クリックのSave Imageのパスを指定できるようにした。(v0.3.1.2)
+･細かいバグ修正。(v0.3.1.3)
+･コンテキストメニューに画像をダウンロードする機能を追加。(v0.3.1.3)
+
+v0.3.0.0
+･不要なコードを整理。
+･artistが複数の値を持っていた場合に対応。コンテキストメニューから選択。
+ Biography Server-> Remap metaで on/off。
+･拡張フィールドが他componentから使えるようにした。
+･コンテキストメニューからタグ書き込み追加。
+･UIによってはマウスホイールが効かないのを修正。(v0.3.0.1)
+
+v0.2.9.0
+･キャッシュのファイル名の最後がスペースであった場合に、安全のために_に置換するようにした。
+･色やフォントを ColumnsUI の Colours and Fonts で設定できるようにした。
+
+v0.2.8.0
+･アルバムモードのときにamazonからとってくる画像の品質を向上。
+･レイアウトに複数パネルを配置すると、それぞれが並列にサーバーにアクセスに行ってしまうのを修正。
+･パネルのアスペクト比でレイアウトを変更するモードを追加。
+
+v0.2.7.0
+･本体組み込みのArtwork Readerで画像を読み込めるようにした。(source listの設定)
+ 現在は、Front画像のみ。(アーティスト画像はSDKが対応していないので、未対応)
+･オンラインサーチを行わない条件を指定できるようにした。(Exclusion Filter)
+･テキストキャッシュの有効期間を指定できるようにした。
+･細かいバグ修正。
+･細かいバグ修正2(v0.2.7.1)。
+･設定ダイアログの整理(v0.2.7.2)。
+･libcurlを使うのを完全にやめた。(バイナリサイズを小さくしたかったため)(v0.2.7.3)。
+･キャッシュに指定されたパスに、存在していないフォルダが含まれている場合、フォルダを作成するようにした。(v0.2.7.3)
+･アルバムのテキストを特別扱いしていたのをやめた。(v0.2.7.3)
+･キャッシュ保存時に、作成するファイルやフォルダの名前の正当性チェックを強化。(v0.2.7.4)
+･WindowsXPの場合に、EdgeStyleが描画されない場合があるのを修正。(v0.2.7.5)
+･WindowsXPの場合に、再描画対象領域が描画されないまま残ってしまう場合があるのに対応。(v0.2.7.5)
+･pseudo transparentがonの場合に、再生トラックが切り替わってもすぐに背景が更新されないのを修正。(v0.2.7.5)
+･ストリーミングのdynamic track titlesに対応。文字化け注意。(v0.2.7.6)
+･PropertiesでLast.fmの情報をいくつか見れるようにした。(v0.2.7.7)
+･コンテキストメニューのSave Imageを少し変更。(v0.2.7.7)
+･キャッシュの保存場所がSpecify File Paths以外で、Albumモードのときに自動でつけるキャッシュのファイル名を%album%から%artist%-%album%に変更。(v0.2.7.7)
+･URLとして不正な文字列を生成してアクセスしてしまうのを修正。(v0.2.7.8)
+
+v0.2.6
+･テキストのボーダーと背景色を設定できるようにした。
+･パネルサイズが大きい場合に、自動で配置を調整するようにした。
+･アスペクト比を維持するか選択できるようにした(右クリックメニュー)
+･テキストの最後で連続する改行は取り除くようにした。
+･画像が複数存在する場合、自動で切り替わる機能(15秒単位)を追加。(右クリックメニュー)
+･XPでクラッシュするのを修正したつもり。
+
+
+v0.2.5
+･Search cache after online searchモードのとき、オンラインでダウンロードできた場合、
+ cacheファイルを上書きしてしまうようにした。
+･メモリリークしてるかもしれないので、スレッドの生成関数を変更。
+･MUSICBRAINZのMBIDを使って検索できるようにしたつもり。
+ ただLast.fmのデータベースにMBIDが登録されている人は多くないらしい。
+
+v0.2.4
+･アーティスト画像を複数枚ダウンロードして、切り替えられるようにした。
+ サーバ負荷を考えて最大5枚、マウスホイール または ホイールクリックで切り替え。
+･擬似背景透過追加
+･他 細かい修正。
+
+v0.2
+･スクロール機能追加。
+･検索するフィールドを設定できるようにした。
+･いくつかのバグ修正。
+･opacityの設定値を保存し忘れていたのを修正(v0.2.1)
+･メモリリークするバグの修正(v0.2.2)
+･さらにメモリリークするバグの修正(v0.2.3)
+･edge styleとpaddingの設定追加(v0.2.3)
+･内部構造の整理(v0.2.3)
+
+v0.1
+
