@@ -9,6 +9,7 @@ panels, plugins and quality of life modules. The ultimate Foobar2000 theme.
 *What's included?*
 
 - Clean and dark interface with simple navigation.
+- Simple rating and number of plays view.
 - Searching and playing of YouTube videos.
 - Cover art viewer and cover flow panel.
 - Real time synced lyric viewer panel.
@@ -20,6 +21,9 @@ panels, plugins and quality of life modules. The ultimate Foobar2000 theme.
 If at any point you make changes to the interface and wish to reset: There's
 an included layout file in the root directory called *Nekorox.fcl* which you
 can load to reset everything to the way it was intended.
+
+Once you have completed the steps below. Make sure to install the fonts
+included in the *fonts* directory.
 
 ### Standard ###
 
