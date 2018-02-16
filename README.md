@@ -1,10 +1,12 @@
 
-# Foobar2000 Theme #
+# Nekorox Foobar2000 Theme #
 
 ![](https://github.com/catlinman/foobar2000/blob/master/preview.png)
 
 My complete Foobar2000 theme. A fork of CaTRoX that includes a lot of custom
-panels, plugins and quality of life modules. The ultimate Foobar2000 theme.
+panels, plugins and quality of life modules.
+
+*The ultimate Foobar2000 theme.*
 
 *What's included?*
 
