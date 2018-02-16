@@ -3,10 +3,10 @@
 
 ![](https://github.com/catlinman/foobar2000/blob/master/preview.png)
 
-My complete Foobar2000 theme. A fork of CaTRoX that includes a lot of custom
-panels, plugins and quality of life modules.
-
 _**The ultimate Foobar2000 theme to get you started.**_
+
+Nekorox is a fork of CaTRoX that includes a lot of custom
+panels, plugins and quality of life modules.
 
 *What's included?*
 
