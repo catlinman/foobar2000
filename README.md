@@ -6,7 +6,7 @@
 My complete Foobar2000 theme. A fork of CaTRoX that includes a lot of custom
 panels, plugins and quality of life modules.
 
-*The ultimate Foobar2000 theme.*
+_**The ultimate Foobar2000 theme to get you started.**_
 
 *What's included?*
 
@@ -16,6 +16,8 @@ panels, plugins and quality of life modules.
 - Cover art viewer and cover flow panel.
 - Real time synced lyric viewer panel.
 - Visualization and amplitude seek-bar.
+- Live biography lookup panel for tracks and artists.
+- Last.fm integration and simple tools.
 - Highly customizable interface.
 
 ## Installation ##
