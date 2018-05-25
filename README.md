@@ -32,10 +32,10 @@ included in the *fonts* directory.
 ### Standard ###
 
 If you have the standard non-portable version of Foobar2000 installed: make
-sure to copy the *configuration* and *user-components* folders to your
-application data directory located at *%appdata%/foobar2000*.
+sure to copy the *smoothbrowser*, *yttm*, *configuration* and *user-components*
+folders to your application data directory located at *%appdata%/foobar2000*.
 
-Additionally, copy the *themes* and *smoothbrowser* directories to your root
+Additionally, copy the *themes* and  directories to your root
 Foobar2000 installation directory.
 
 ### Portable ###
