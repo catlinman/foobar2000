@@ -1,0 +1,40 @@
+edcast-jack Readme
+-------------------
+
+This version of edcast allows you to hook into any jack output port
+and broadcast the audio to an icecast or shoutcast server.
+
+This version of edcast is all command-line oriented, and comes with
+example config files for each of the encoding types supported (Ogg Vorbis,
+LAME, AAC).  You will most likely need to take one of the example configs
+(in the conf dir) and modify it to suit your needs.
+
+Here is an example of how to use it with jack (http://jackit.sourceforge.net).
+
+Step 1: 
+ * startup jackd 
+
+Step 2:
+ * Feed a signal into jackd.  There are many applications you can use
+   for this, if you like XMMS, try installing http://xmms-jack.sourceforge.net/
+
+Step 3:
+ * Start edcast specifying the appropriate output ports.  To get a list of
+   the output ports, use jack_lsp.  If you use XMMS, you'll see something like :
+
+    % jack_lsp
+    alsa_pcm:capture_1
+    alsa_pcm:capture_2
+    alsa_pcm:playback_1
+    alsa_pcm:playback_2
+    bio2jack_0_32083:out_0
+    bio2jack_0_32083:out_1
+
+   In this case, the bio2jack_0_32083:out_0 and bio2jack_0_32083:out_1 are the 
+   output ports from XMMS.  So you'd start edcast like :
+
+    edcast -c edcast_OggVorbis.cfg bio2jack_0_32083:out_0 bio2jack_0_32083:out_1
+
+   Use edcast -h for a usage.
+   
+

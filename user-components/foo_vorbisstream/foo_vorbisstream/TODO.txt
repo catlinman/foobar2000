@@ -1,0 +1,10 @@
+modularize codec support (allow expansion beyond vorbis)
+integrate resampler
+	http://foosion.foobar2000.org/doxygen/0.9.5.4/classresampler__entry.html
+	dsp_chain_manager
+	use advanced preferences to specify sampling rate (default: 44100) and whatnot
+	elegant multi-channel handling?
+remove "advanced settings" tab
+	
+possibles:
+	basic local http server (for apache-based relaying?)

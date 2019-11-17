@@ -1,0 +1,179 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_CONFIG DIALOGEX 0, 0, 324, 243
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Configuration"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,208,224,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,264,224,50,14
+    CONTROL         "Tab1",IDC_TAB1,"SysTabControl32",WS_TABSTOP,7,7,309,213
+END
+
+IDD_PROPPAGE_LARGE DIALOGEX 15, 25, 312, 176
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_BITRATE,100,8,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_QUALITY,100,27,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SAMPLERATE,100,43,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CHANNELS,100,62,48,12,ES_AUTOHSCROLL
+    COMBOBOX        IDC_SERVER_TYPE,100,80,48,60,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_SERVER_IP,100,99,88,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SERVER_PORT,100,115,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PASSWORD,100,134,88,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MOUNTPOINT,100,152,88,12,ES_AUTOHSCROLL
+    RTEXT           "Bitrate",IDC_STATIC,69,8,23,12,SS_CENTERIMAGE
+    RTEXT           "Quality",IDC_STATIC,68,27,24,12,SS_CENTERIMAGE
+    RTEXT           "Sample Rate",IDC_STATIC,50,45,42,12,SS_CENTERIMAGE
+    RTEXT           "Channels",IDC_STATIC,61,62,31,12,SS_CENTERIMAGE
+    LTEXT           "* 1 for Mono, 2 for Stereo",IDC_STATIC,156,62,100,12,SS_CENTERIMAGE
+    RTEXT           "Server Type",IDC_STATIC,44,80,48,12,SS_CENTERIMAGE
+    RTEXT           "Server Address",IDC_STATIC,40,99,52,12,SS_CENTERIMAGE
+    RTEXT           "Server Port",IDC_STATIC,55,117,37,12,SS_CENTERIMAGE
+    RTEXT           "Encoder Password",IDC_STATIC,28,134,64,12,SS_CENTERIMAGE,WS_EX_RTLREADING
+    RTEXT           "Mountpoint",IDC_STATIC,55,152,37,12,SS_CENTERIMAGE
+    LTEXT           "* Required for Icecast servers",IDC_STATIC,196,152,104,12,SS_CENTERIMAGE
+    CONTROL         "Use bitrate",IDC_USEBITRATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,156,8,56,12
+END
+
+IDD_PROPPAGE_LARGE1 DIALOGEX 15, 25, 312, 176
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    CONTROL         "Public Server",IDC_PUBLIC,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | WS_TABSTOP,49,8,59,10
+    EDITTEXT        IDC_STREAMNAME,99,28,117,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_STREAMDESC,99,48,117,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_STREAMURL,99,68,117,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_STREAMGENRE,99,88,117,12,ES_AUTOHSCROLL
+    RTEXT           "Stream Name",IDC_STATIC,28,28,63,10
+    RTEXT           "Stream Description",IDC_STATIC,28,49,63,10
+    RTEXT           "Stream URL",IDC_STATIC,28,68,63,10
+    RTEXT           "Stream Genre",IDC_STATIC,28,89,63,10
+    RTEXT           "ICQ #",IDC_STATIC,28,108,63,10
+    RTEXT           "AIM",IDC_STATIC,28,129,63,10
+    RTEXT           "IRC",IDC_STATIC,28,148,63,10
+    EDITTEXT        IDC_ICQ,99,108,117,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_AIM,99,128,117,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_IRC,99,148,117,12,ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_CONFIG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 316
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 235
+    END
+
+    IDD_PROPPAGE_LARGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 304
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 168
+    END
+
+    IDD_PROPPAGE_LARGE1, DIALOG
+    BEGIN
+        LEFTMARGIN, 65
+        RIGHTMARGIN, 247
+        TOPMARGIN, 16
+        BOTTOMMARGIN, 160
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_CONTEXT MENU 
+BEGIN
+    POPUP "Popup"
+    BEGIN
+        MENUITEM "Connect",                     ID_POPUP_CONNECT
+        MENUITEM "Configure",                   ID_POPUP_CONFIGURE
+        MENUITEM SEPARATOR
+        MENUITEM "Delete",                      ID_POPUP_DELETE
+    END
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
