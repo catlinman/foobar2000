@@ -25,6 +25,12 @@ panels, plugins and quality of life modules.
 - Last.fm integration and simple tools.
 - **It works right out of the box.**
 
+## White Theme (AlphaRoX)
+
+Looking for a white/light theme alternative? Check out my new account's (@zealsprince) [AlphaRoX](https://github.com/zealsprince/foobar2000) fork!
+
+![](https://github.com/zealsprince/foobar2000/blob/master/preview.png)
+
 ## Installation ##
 
 If at any point you make changes to the interface and wish to reset: There's
