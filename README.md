@@ -1,4 +1,8 @@
 
+> [!IMPORTANT]  
+> This project is no longer maintained. I've moved on to make [rox](https://github.com/zealsprince/rox) as a standalone project
+> if you want a modern native player that comes with the promise of all the same bells and whistles as CaTRoX, NekoRoX and AlphaRoX.
+
 # NekoRoX Foobar2000 Theme #
 
 ![](https://github.com/catlinman/foobar2000/blob/master/preview.png)
